@@ -285,3 +285,217 @@ D. To eliminate all hardware requirements
 - [Microsoft Learn](https://learn.microsoft.com/)
 - [VirtualBox Documentation](https://www.virtualbox.org/wiki/Documentation)
 - [Microsoft Hyper-V Documentation](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/)
+
+---
+
+# Windows Processes, Executables, DLLs, Threads, and Services
+
+## 1. Program vs. Process
+
+A **program** is a set of instructions stored on disk. A **process** is a running instance of a program.
+
+When an application starts, Windows creates a process, establishes its execution environment, allocates virtual memory, and creates at least one thread.
+
+| Program | Process |
+|---|---|
+| Software stored as files | Running instance of software |
+| Contains instructions and data | Executes instructions using system resources |
+| Exists independently of execution | Exists while the process is running |
+| Example: `notepad.exe` on disk | A running instance of Notepad |
+
+**Exam tip:** A program is the software; a process is an instance of that software in execution. One program can have multiple running processes.
+
+## 2. Resources Used by a Process
+
+Processes rely on operating-system resources to perform their work.
+
+| Resource | Purpose |
+|---|---|
+| CPU time | Allows threads to execute instructions |
+| Memory (RAM) | Holds code, data, stacks, heaps, and other runtime information |
+| Disk access | Allows files to be read or written when permitted |
+| Network access | Enables communication with other systems |
+| Handles | References to operating-system objects such as files and registry keys |
+| Threads | Units of execution within the process |
+| PID | Identifies the process |
+| Security token | Represents the process security identity and permissions |
+
+### Memory and Virtual Address Space
+
+A process generally has its own virtual address space. It can contain program code, data, heaps, thread stacks, and loaded libraries.
+
+Virtual memory is not identical to physical RAM. Windows manages virtual memory and maps it to physical memory or other backing storage as required.
+
+### Handles vs. PIDs
+
+A **Process ID (PID)** identifies a process.
+
+A **handle** is a reference used to access an operating-system object, such as an open file, registry key, or synchronization object.
+
+These are different concepts.
+
+## 3. Executable Files
+
+An **executable file** contains code and information that an operating system can load and execute.
+
+Windows commonly uses `.exe` files, many of which follow the Portable Executable (PE) format.
+
+Examples:
+
+- `notepad.exe` — text editor
+- `explorer.exe` — Windows shell and File Explorer
+- `cmd.exe` — Command Prompt
+- `powershell.exe` — Windows PowerShell
+
+Executables can come from Windows, application installers, trusted software repositories, or software developed by programmers. Malicious software can also be distributed as executable files, so verify the source before running them.
+
+### How an Executable Runs
+
+1. A user or another process requests that the program start.
+2. Windows locates and loads the executable.
+3. Windows creates a process and establishes its execution environment.
+4. Required dependencies are loaded as needed.
+5. A thread begins executing instructions.
+
+Scripts such as `.ps1` files can also be executed through an appropriate interpreter, such as PowerShell.
+
+**Exam tip:** An executable is a file; a process is a running instance.
+
+## 4. Dynamic Link Libraries (DLLs)
+
+A **Dynamic Link Library (DLL)** contains reusable code, data, or both that applications can load and use.
+
+DLL files normally use the `.dll` extension.
+
+Examples:
+
+- `kernel32.dll` — provides many core Windows system functions.
+- `user32.dll` — provides functions associated with Windows user-interface operations.
+
+### Why Applications Use DLLs
+
+- **Code reuse:** Applications can use shared functions.
+- **Modularity:** Software components can be maintained separately.
+- **Smaller executables:** Shared code does not always need to be included in every application.
+- **Memory efficiency:** Windows can share eligible read-only physical memory pages between processes.
+
+### How DLLs Work
+
+1. An application starts.
+2. The application or a dependency requires a DLL.
+3. Windows loads or maps the DLL into the process as needed.
+4. The application calls functions provided by the DLL.
+
+DLLs can be loaded at startup or dynamically while an application runs.
+
+A DLL is generally a library loaded by another program, rather than a standalone application intended to be launched directly.
+
+**Exam tip:** An EXE commonly starts an application; a DLL provides reusable functionality.
+
+## 5. Threads
+
+A **thread** is the basic unit of execution scheduled by the operating system.
+
+A process contains one or more threads. Threads perform work by executing instructions.
+
+### What Does a Thread Have?
+
+Each thread has its own:
+
+- **Program counter (instruction pointer):** Tracks the instruction being executed.
+- **CPU registers:** Hold the thread's current processor state.
+- **Stack:** Holds function-call information, local variables, and temporary execution data.
+
+Threads in the same process generally share:
+
+- The process virtual address space
+- Access to loaded executable code and DLL mappings
+- Access to process resources, subject to permissions and how those resources are used
+
+### Why Use Multiple Threads?
+
+Multiple threads allow an application to handle different tasks concurrently. On multicore processors, threads may also execute in parallel.
+
+Threads can improve responsiveness, but shared data must be synchronized correctly to prevent race conditions.
+
+### Processes vs. Threads
+
+| Process | Thread |
+|---|---|
+| Running instance of a program | Unit of execution within a process |
+| Has its own virtual address space | Shares its process address space |
+| Has a process ID (PID) | Has a thread ID (TID) |
+| Contains one or more threads | Executes instructions for the process |
+
+**Exam tip:** Processes provide separate execution environments; threads provide execution within a process.
+
+## 6. Windows Services
+
+A **Windows service** is a program or component designed to perform background tasks, often without direct user interaction.
+
+Services commonly support networking, updates, logging, printing, and security.
+
+### Characteristics
+
+- Can be configured for automatic, manual, or trigger-based startup.
+- Usually run without a visible desktop window.
+- Can continue running without an active user session.
+- Operate under configured accounts and permissions.
+- Are managed through Windows service-management infrastructure.
+
+Examples include:
+
+- Windows Update
+- Print Spooler
+- Microsoft Defender Antivirus services
+
+A service is not necessarily a separate process. Windows can host multiple services within a shared process, while other services run in their own processes.
+
+### View Services and Processes
+
+```powershell
+Get-Service
+Get-Service -Name Spooler
+Get-Process
+```
+
+`Get-Service` displays service information. `Get-Process` displays running processes.
+
+## 7. Quick Revision
+
+| Term | Meaning |
+|---|---|
+| Program | Instructions stored as software |
+| Process | Running instance of a program |
+| Executable | File that can be loaded and executed |
+| DLL | Library providing reusable code or data |
+| Thread | Unit of execution inside a process |
+| PID | Identifies a process |
+| TID | Identifies a thread |
+| Handle | Reference to an operating-system object |
+| Service | Background component managed by Windows |
+| CPU time | Time allocated for executing instructions |
+| Virtual address space | Memory address space associated with a process |
+
+## 8. Practice Questions
+
+1. What is the difference between a program and a process?
+2. What does a PID identify?
+3. What is the main purpose of a DLL?
+4. Which resources do threads in the same process generally share?
+5. What is the difference between a thread stack and a process address space?
+6. Can multiple Windows services run in one process?
+7. Which PowerShell command lists processes?
+8. Which PowerShell command lists services?
+
+### Answers
+
+1. A program is software; a process is a running instance.
+2. A process.
+3. To provide reusable code or data.
+4. They generally share the process address space and access to process resources.
+5. A stack is thread-specific execution memory; the address space covers the process memory mappings.
+6. Yes.
+7. `Get-Process`.
+8. `Get-Service`.
+
