@@ -491,3 +491,128 @@ D. No, because PowerShell cannot run scripts
 - [Microsoft Learn: about_Redirection](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_redirection)
 - [Microsoft Learn: about_Pipelines](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_pipelines)
 - [Microsoft Learn: about_Execution_Policies](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies)
+
+## PowerShell Execution Policy
+
+Execution Policy controls the conditions under which PowerShell runs scripts. It is a safety feature, not a security boundary.
+
+| Policy | Description |
+|---|---|
+| Restricted | Blocks script files from running. |
+| RemoteSigned | Local scripts can run; downloaded scripts generally need a trusted signature. |
+| AllSigned | All scripts must be signed by a trusted publisher. |
+| Unrestricted | Allows scripts to run, with warnings in certain cases. |
+| Bypass | Nothing is blocked and no execution-policy warnings or prompts appear. |
+
+### Check Execution Policy
+
+```powershell
+Get-ExecutionPolicy
+Get-ExecutionPolicy -List
+```
+
+### Set Execution Policy for the Current User
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+This normally does not require an elevated PowerShell session.
+
+For a temporary policy limited to the current PowerShell process:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+```
+
+Use bypass only when appropriate for a trusted script and your organization's policies permit it.
+
+**Exam tip:** Execution Policy and Administrator privileges are different. Changing Execution Policy does not automatically grant administrative rights.
+
+## Administrator Privileges and UAC
+
+An elevated PowerShell session runs with administrative privileges.
+
+### Open PowerShell as Administrator
+
+1. Open the Start menu.
+2. Search for PowerShell.
+3. Select **Run as administrator**.
+4. Approve the User Account Control (UAC) prompt.
+
+### Request an Elevated PowerShell Window
+
+```powershell
+Start-Process -FilePath "powershell.exe" -Verb RunAs
+```
+
+UAC may request approval or administrator credentials.
+
+**Best practice:** Use a standard session for everyday tasks and elevate only when necessary.
+
+## Building Blocks of a Script
+
+| Concept | Purpose | Example |
+|---|---|---|
+| Input | Receives information | `Read-Host "Enter your name"` |
+| Variables | Store information | `$name = "Alex"` |
+| Conditions | Make decisions | `if ($number -gt 10) { ... }` |
+| Loops | Repeat actions | `foreach ($item in $items) { ... }` |
+| Output | Produces results | `Write-Output $name` |
+
+### Example Script
+
+```powershell
+$name = Read-Host "Enter your name"
+
+if ($name) {
+    Write-Output "Hello, $name!"
+}
+```
+
+## Windows Software Management with winget
+
+`winget` is the Windows Package Manager command-line tool.
+
+```powershell
+winget search 7zip
+winget install 7zip.7zip
+winget list
+winget upgrade
+```
+
+Review package details before installing software. Package identifiers and availability may vary.
+
+## Environment Variables and PATH
+
+Environment variables store configuration information used by Windows and applications.
+
+```powershell
+$env:PATH
+$env:USERPROFILE
+$env:TEMP
+Get-ChildItem Env:
+```
+
+- `PATH` contains directories searched when locating executable commands.
+- `USERPROFILE` identifies the current user's profile directory.
+- `TEMP` identifies a temporary-files directory.
+
+## How PowerShell Finds Commands
+
+Use `Get-Command` to identify a command and its type:
+
+```powershell
+Get-Command notepad
+Get-Command powershell
+```
+
+Use `where.exe` to search for matching executable files:
+
+```powershell
+where.exe notepad
+where.exe powershell
+```
+
+**Exam tip:** `Get-Command` can identify cmdlets, aliases, functions, scripts, and applications. `where.exe` searches for files in the current directory and PATH directories.
+
